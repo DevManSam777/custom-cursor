@@ -22,6 +22,37 @@ class CustomCursor extends HTMLElement {
             ],
             trailLength: 15,
         };
+
+        // Color themes
+        this.themes = {
+            orange: {
+                main: [255, 160, 0],
+                trail: [
+                    [255, 190, 0],
+                    [255, 215, 0],
+                    [255, 235, 0],
+                    [255, 255, 0]
+                ]
+            },
+            blue: {
+                main: [0, 71, 171],
+                trail: [
+                    [0, 105, 192],
+                    [0, 144, 178],
+                    [0, 178, 135],
+                    [0, 196, 98]
+                ]
+            },
+            magenta: {
+                main: [255, 0, 255],
+                trail: [
+                    [238, 130, 238],
+                    [147, 112, 219],
+                    [72, 209, 204],
+                    [0, 255, 127]
+                ]
+            }
+        };
         
         this.mouseMove = this.mouseMove.bind(this);
         this.handleMouseDown = this.handleMouseDown.bind(this);
@@ -29,6 +60,16 @@ class CustomCursor extends HTMLElement {
         
         this.createElements();
         this.addStyles();
+    }
+
+    static get observedAttributes() {
+        return ['theme'];
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (name === 'theme' && oldValue !== newValue) {
+            this.addStyles();
+        }
     }
     
     createElements() {
@@ -44,10 +85,105 @@ class CustomCursor extends HTMLElement {
             this.trailCursors.push(trailCursor);
         });
     }
+
+    getCurrentTheme() {
+        const theme = this.getAttribute('theme') || 'orange';
+        return this.themes[theme] || this.themes.orange;
+    }
+
+    generateThemeCSS() {
+        const currentTheme = this.getCurrentTheme();
+        const [r, g, b] = currentTheme.main;
+
+        let css = `
+            .cursor {
+                width: 20px;
+                height: 20px;
+                background-color: rgba(${r}, ${g}, ${b}, 0.8);
+                border: 10px solid rgba(${r}, ${g}, ${b}, 0.3);
+                box-shadow: 0 0 16px rgba(${r}, ${g}, ${b}, 0.8);
+                border-radius: 50%;
+                position: fixed;
+                top: 0;
+                left: 0;
+                z-index: 99999;
+                pointer-events: none;
+                transform-origin: center;
+                will-change: transform, box-shadow;
+                animation: cursor-pulse 3s infinite ease-in-out;
+            }
+
+            @keyframes cursor-pulse {
+                0%, 100% {
+                    box-shadow: 0 0 10px rgba(${r}, ${g}, ${b}, 0.6);
+                    opacity: 0.7;
+                }
+                50% {
+                    box-shadow: 0 0 22px rgba(${r}, ${g}, ${b}, 0.9);
+                    opacity: 1;
+                }
+            }
+        `;
+
+        // Generate trail cursor styles
+        currentTheme.trail.forEach((color, index) => {
+            const [tr, tg, tb] = color;
+            const sizes = [
+                { width: 16, height: 16, border: 8 },
+                { width: 12, height: 12, border: 6 },
+                { width: 8, height: 8, border: 4 },
+                { width: 4, height: 4, border: 2 }
+            ];
+            const opacities = [0.25, 0.2, 0.25, 0.2];
+            const delays = ['.25s', '.5s', '.75s', '1s'];
+            const shadowSizes = [12, 10, 7, 4];
+            const shadowOpacities = [0.7, 0.6, 0.7, 0.6];
+            const pulseOpacities = [
+                { start: 0.6, end: 0.9, shadowStart: 8, shadowEnd: 18 },
+                { start: 0.6, end: 0.9, shadowStart: 6, shadowEnd: 15 },
+                { start: 0.6, end: 0.9, shadowStart: 4, shadowEnd: 12 },
+                { start: 0.6, end: 0.9, shadowStart: 2, shadowEnd: 8 }
+            ];
+
+            const size = sizes[index];
+            const opacity = opacities[index];
+            const delay = delays[index];
+            const shadowSize = shadowSizes[index];
+            const shadowOpacity = shadowOpacities[index];
+            const pulseOpacity = pulseOpacities[index];
+
+            css += `
+                .cursor-additional-${index + 1} {
+                    width: ${size.width}px;
+                    height: ${size.height}px;
+                    background-color: rgba(${tr}, ${tg}, ${tb}, 0.8);
+                    border: ${size.border}px solid rgba(${tr}, ${tg}, ${tb}, ${opacity});
+                    box-shadow: 0 0 ${shadowSize}px rgba(${tr}, ${tg}, ${tb}, ${shadowOpacity});
+                    animation: pulse-${index + 1} 3s infinite ease-in-out;
+                    animation-delay: ${delay};
+                }
+
+                @keyframes pulse-${index + 1} {
+                    0%, 100% {
+                        box-shadow: 0 0 ${pulseOpacity.shadowStart}px rgba(${tr}, ${tg}, ${tb}, ${pulseOpacity.start});
+                        opacity: ${pulseOpacity.start};
+                    }
+                    50% {
+                        box-shadow: 0 0 ${pulseOpacity.shadowEnd}px rgba(${tr}, ${tg}, ${tb}, ${pulseOpacity.end});
+                        opacity: 1;
+                    }
+                }
+            `;
+        });
+
+        return css;
+    }
     
     addStyles() {
-        if (document.head.querySelector('#custom-cursor-styles')) {
-            return;
+        // Remove existing styles if they exist
+        const existingStyle = document.head.querySelector('#custom-cursor-styles');
+        if (existingStyle) {
+            existingStyle.remove();
         }
         
         const style = document.createElement('style');
@@ -61,22 +197,7 @@ class CustomCursor extends HTMLElement {
                 z-index: 99999;
             }
             
-            .cursor {
-                width: 20px;
-                height: 20px;
-                background-color: rgba(255, 160, 0, 0.8);
-                border: 10px solid rgba(255, 160, 0, 0.3);
-                box-shadow: 0 0 16px rgba(255, 160, 0, 0.8);
-                border-radius: 50%;
-                position: fixed;
-                top: 0;
-                left: 0;
-                z-index: 99999;
-                pointer-events: none;
-                transform-origin: center;
-                will-change: transform, box-shadow;
-                animation: cursor-pulse 3s infinite ease-in-out;
-            }
+            ${this.generateThemeCSS()}
 
             .cursor-additional {
                 position: fixed;
@@ -87,101 +208,6 @@ class CustomCursor extends HTMLElement {
                 pointer-events: none;
                 will-change: box-shadow, opacity;
                 transform-origin: center;
-            }
-
-            .cursor-additional-1 {
-                width: 16px;
-                height: 16px;
-                background-color: rgba(255, 190, 0, 0.8);
-                border: 8px solid rgba(255, 190, 0, 0.25);
-                box-shadow: 0 0 12px rgba(255, 190, 0, 0.7);
-                animation: pulse-1 3s infinite ease-in-out;
-                animation-delay: .25s;
-            }
-
-            .cursor-additional-2 {
-                width: 12px;
-                height: 12px;
-                background-color: rgba(255, 215, 0, 0.8);
-                border: 6px solid rgba(255, 215, 0, 0.2);
-                box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
-                animation: pulse-2 3s infinite ease-in-out;
-                animation-delay: .5s;
-            }
-
-            .cursor-additional-3 {
-                width: 8px;
-                height: 8px;
-                background-color: rgba(255, 235, 0, 0.8);
-                border: 4px solid rgba(255, 235, 0, 0.25);
-                box-shadow: 0 0 7px rgba(255, 235, 0, 0.7);
-                animation: pulse-3 3s infinite ease-in-out;
-                animation-delay: .75s;
-            }
-
-            .cursor-additional-4 {
-                width: 4px;
-                height: 4px;
-                background-color: rgba(255, 255, 0, 0.8);
-                border: 2px solid rgba(255, 255, 0, 0.2);
-                box-shadow: 0 0 4px rgba(255, 255, 0, 0.6);
-                animation: pulse-4 3s infinite ease-in-out;
-                animation-delay: 1s;
-            }
-
-            @keyframes cursor-pulse {
-                0%, 100% {
-                    box-shadow: 0 0 10px rgba(255, 160, 0, 0.6);
-                    opacity: 0.7;
-                }
-                50% {
-                    box-shadow: 0 0 22px rgba(255, 160, 0, 0.9);
-                    opacity: 1;
-                }
-            }
-
-            @keyframes pulse-1 {
-                0%, 100% {
-                    box-shadow: 0 0 8px rgba(255, 190, 0, 0.6);
-                    opacity: 0.6;
-                }
-                50% {
-                    box-shadow: 0 0 18px rgba(255, 190, 0, 0.9);
-                    opacity: 1;
-                }
-            }
-
-            @keyframes pulse-2 {
-                0%, 100% {
-                    box-shadow: 0 0 6px rgba(255, 215, 0, 0.6);
-                    opacity: 0.6;
-                }
-                50% {
-                    box-shadow: 0 0 15px rgba(255, 215, 0, 0.9);
-                    opacity: 1;
-                }
-            }
-
-            @keyframes pulse-3 {
-                0%, 100% {
-                    box-shadow: 0 0 4px rgba(255, 235, 0, 0.6);
-                    opacity: 0.6;
-                }
-                50% {
-                    box-shadow: 0 0 12px rgba(255, 235, 0, 0.9);
-                    opacity: 1;
-                }
-            }
-
-            @keyframes pulse-4 {
-                0%, 100% {
-                    box-shadow: 0 0 2px rgba(255, 255, 0, 0.6);
-                    opacity: 0.6;
-                }
-                50% {
-                    box-shadow: 0 0 8px rgba(255, 255, 0, 0.9);
-                    opacity: 1;
-                }
             }
             
             @media (pointer: coarse) {
