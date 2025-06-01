@@ -92,7 +92,7 @@ class CustomCursor extends HTMLElement {
             .cursor-additional-1 {
                 width: 16px;
                 height: 16px;
-                background-color: rgba(255, 190, 0, 0.7);
+                background-color: rgba(255, 190, 0, 0.8);
                 border: 8px solid rgba(255, 190, 0, 0.25);
                 box-shadow: 0 0 12px rgba(255, 190, 0, 0.7);
                 animation: pulse-1 3s infinite ease-in-out;
@@ -102,7 +102,7 @@ class CustomCursor extends HTMLElement {
             .cursor-additional-2 {
                 width: 12px;
                 height: 12px;
-                background-color: rgba(255, 215, 0, 0.6);
+                background-color: rgba(255, 215, 0, 0.8);
                 border: 6px solid rgba(255, 215, 0, 0.2);
                 box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
                 animation: pulse-2 3s infinite ease-in-out;
@@ -112,7 +112,7 @@ class CustomCursor extends HTMLElement {
             .cursor-additional-3 {
                 width: 8px;
                 height: 8px;
-                background-color: rgba(255, 235, 0, 0.7);
+                background-color: rgba(255, 235, 0, 0.8);
                 border: 4px solid rgba(255, 235, 0, 0.25);
                 box-shadow: 0 0 7px rgba(255, 235, 0, 0.7);
                 animation: pulse-3 3s infinite ease-in-out;
@@ -122,7 +122,7 @@ class CustomCursor extends HTMLElement {
             .cursor-additional-4 {
                 width: 4px;
                 height: 4px;
-                background-color: rgba(255, 255, 0, 0.6);
+                background-color: rgba(255, 255, 0, 0.8);
                 border: 2px solid rgba(255, 255, 0, 0.2);
                 box-shadow: 0 0 4px rgba(255, 255, 0, 0.6);
                 animation: pulse-4 3s infinite ease-in-out;
