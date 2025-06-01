@@ -69,6 +69,8 @@ class CustomCursor extends HTMLElement {
                 box-shadow: 0 0 16px rgba(255, 160, 0, 0.8);
                 border-radius: 50%;
                 position: fixed;
+                top: 0;
+                left: 0;
                 z-index: 99999;
                 pointer-events: none;
                 transform-origin: center;
@@ -78,6 +80,8 @@ class CustomCursor extends HTMLElement {
 
             .cursor-additional {
                 position: fixed;
+                top: 0;
+                left: 0;
                 border-radius: 50%;
                 z-index: 99998;
                 pointer-events: none;
@@ -227,11 +231,7 @@ class CustomCursor extends HTMLElement {
         const scale = this.isClicking ? this.cursorConfig.main.clickScale : 1;
         
         this.mainCursor.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
-        if (this.cursorConfig.main.transitionDuration > 0) {
-            this.mainCursor.style.transition = `transform ${this.cursorConfig.main.transitionDuration}s ease-out`;
-        } else {
-            this.mainCursor.style.transition = 'none';
-        }
+        this.mainCursor.style.transition = `transform ${this.cursorConfig.main.transitionDuration}s ease-out`;
     }
     
     updateTrailCursors() {
@@ -244,11 +244,7 @@ class CustomCursor extends HTMLElement {
             const y = delayedPosition.y - 5;
             
             trailCursor.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
-            if (circle.transitionDuration > 0) {
-                trailCursor.style.transition = `transform ${circle.transitionDuration}s ease-out`;
-            } else {
-                trailCursor.style.transition = 'none';
-            }
+            trailCursor.style.transition = `transform ${circle.transitionDuration}s ease-out`;
         });
     }
     
