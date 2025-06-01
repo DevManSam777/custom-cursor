@@ -1,5 +1,7 @@
 # Custom Cursor Web Component
 
+![animated cursor gif](./cursor.gif)
+
 A reusable web component that creates a custom cursor with gradient trail effect.
 
 ## Usage
