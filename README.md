@@ -66,3 +66,9 @@ Available themes: `orange` (default), `blue`, `magenta`
 - Automatically hides on touch devices
 - No dependencies required
 - Works in all modern browsers
+
+- ## License
+
+[LICENSE](LICENSE)  
+
+Copyright (c) 2025 DevManSam
