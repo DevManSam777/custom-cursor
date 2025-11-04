@@ -8,7 +8,7 @@ A reusable web component that creates a custom cursor with gradient trail effect
 
 1. Include the script in your HTML:
 ```html
-<script src="https://raw.githack.com/DevManSam777/custom-cursor/main/custom-cursor.js" defer></script>
+<script src="https://cdn.jsdelivr.net/gh/DevManSam777/custom-cursor@main/custom-cursor.js" defer></script>
 ```
 
 2. Add the component to your page:
